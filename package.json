@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/5E7EN/Hebrew-Syllable-Detector#readme",
   "dependencies": {
-    "opn": "^6.0.0"
+    "colors": "^1.4.0"
   }
 }

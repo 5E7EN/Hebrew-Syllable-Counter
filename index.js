@@ -1,4 +1,4 @@
-//const opn = require('opn');
+const colors = require('colors');
 
 const constants = require('./constants');
 const cvFc = require('./conversionFuncs');
@@ -13,7 +13,7 @@ const rangesToRemove = [
 ];
 
 (() => {
-    let original = constants.toCheck;
+    let original = constants.TO_CHECK;
     let modified = original;
 
     // Remove characters that match removal ranges
@@ -21,14 +21,21 @@ const rangesToRemove = [
         modified = modified.replace(range, '');
     }
 
-    /* Convert modified string to unicode */
+    // Convert strings to unicode for comparsion
+    const originalUnicode = cvFc.convertCharStr2CPOLD(cvFc.convertNumbers2Char(original, 'hex'), 'none', 4, 'hex');
     const resultUnicode = cvFc.convertCharStr2CPOLD(cvFc.convertNumbers2Char(modified, 'hex'), 'none', 4, 'hex');
 
-    //opn(`https://www.google.com/search?q=${encodeURIComponent(modified)}`);
-
+    // Prepare result
     const resultText = resultCheckRegex.test(modified)
-        ? `Syllables after processing: ${modified.match(resultCheckRegex).length} | Modified unicode string equiv: ${resultUnicode}`
-        : `Input does not contain Hebrew vowels.`;
+        ? [
+              '\n---------',
+              colors.bold.green(`Total syllables after processing: ${modified.match(resultCheckRegex).length}\n`),
+              colors.yellow(`Original unicode string equiv: ${originalUnicode}`),
+              colors.yellow(`Modified unicode string equiv: ${resultUnicode}`),
+              colors.underline(`URL query: https://www.google.com/search?q=${encodeURIComponent(modified)}`),
+              '---------\n'
+          ].join('\n')
+        : 'Input does not contain Hebrew vowels.';
     console.log(resultText);
 })();
 
@@ -46,10 +53,10 @@ const rangesToRemove = [
 //     if (/\u05C2/g.test(string)) niqqudos = niqqudos - string.match(/\u05C2+/g).length; // Sin
 
 //     // Check if message ends with one or two Sheva's and subtract appropriately
-//     if ((/\u05B0/g.test(string.charAt(string.length - 1)) && /\u05B0/g.test(string.charAt(string.length - 3))) || /\u05B0/g.test(string.charAt(string.length - 1))) {
-//         if (/\u05B0/g.test(string.charAt(string.length - 1)) && /\u05B0/g.test(string.charAt(string.length - 3))) niqqudos = niqqudos - 2;
-//         else if (/\u05B0/g.test(string.charAt(string.length - 1))) niqqudos = niqqudos - 1;
-//     }
+// if ((/\u05B0/g.test(string.charAt(string.length - 1)) && /\u05B0/g.test(string.charAt(string.length - 3))) || /\u05B0/g.test(string.charAt(string.length - 1))) {
+//     if (/\u05B0/g.test(string.charAt(string.length - 1)) && /\u05B0/g.test(string.charAt(string.length - 3))) niqqudos = niqqudos - 2;
+//     else if (/\u05B0/g.test(string.charAt(string.length - 1))) niqqudos = niqqudos - 1;
+// }
 
 //     /* Result */
 //     const result = generalRegex.test(string) ? `Syllables after processing: ${niqqudos}` : `Input does not contain Hebrew vowels.`;
