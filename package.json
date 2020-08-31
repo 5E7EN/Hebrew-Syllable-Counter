@@ -1,22 +1,22 @@
 {
-  "name": "hebrew-syllable-detector",
-  "version": "1.0.0",
-  "description": "Determines how many syllables are in a Hebrew paragraph",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/5E7EN/Hebrew-Syllable-Detector.git"
-  },
-  "author": "5E7EN",
-  "license": "GPL-3.0-or-later",
-  "bugs": {
-    "url": "https://github.com/5E7EN/Hebrew-Syllable-Detector/issues"
-  },
-  "homepage": "https://github.com/5E7EN/Hebrew-Syllable-Detector#readme",
-  "dependencies": {
-    "colors": "^1.4.0"
-  }
+    "name": "hebrew-syllable-algorithm",
+    "version": "1.0.0",
+    "description": "Determines how many syllables are in a Hebrew paragraph",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/5E7EN/Hebrew-Syllable-Algorithm.git"
+    },
+    "author": "5E7EN",
+    "license": "GPL-3.0-or-later",
+    "bugs": {
+        "url": "https://github.com/5E7EN/Hebrew-Syllable-Algorithm/issues"
+    },
+    "homepage": "https://github.com/5E7EN/Hebrew-Syllable-Algorithm#readme",
+    "dependencies": {
+        "colors": "^1.4.0"
+    }
 }

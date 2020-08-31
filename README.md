@@ -1,4 +1,4 @@
-# Hebrew Syllable Detector
+# Hebrew Syllable Algorithm
 
 Determines how many syllables are in a Hebrew paragraph
 
@@ -18,7 +18,7 @@ Determines how many syllables are in a Hebrew paragraph
 
 -   `[\u0591-\u05AF]`
 -   `[\u05BC-\u05C7]`
--   `[\u05D0-\u05F4]` - (Actual Letters) | 🤔
+-   `[\u05D0-\u05F4]` - (Actual Letters)
 
 ### Exclusions to ranges
 

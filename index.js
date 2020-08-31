@@ -31,7 +31,6 @@ const resultCheckRegex = /[\u05B0-\u05EA]/g;
     for (const word of splitString) {
         // Find all sheva indices for future processing
         const shevaIndices = [];
-
         for (let i = 0; i < word.length; i++) {
             if (/\u05B0/.test(word[i])) shevaIndices.push(i);
         }

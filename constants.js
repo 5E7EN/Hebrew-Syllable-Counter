@@ -1,4 +1,4 @@
-const TO_CHECK = 'בַּוְדָה';
+const TO_CHECK = 'בָּוְדָה';
 
 // Gedolah: בָּוְדָה
 // Ketanah: בַּוְדָה
