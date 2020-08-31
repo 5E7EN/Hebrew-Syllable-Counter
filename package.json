@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/5E7EN/Hebrew-Syllable-Detector/issues"
   },
-  "homepage": "https://github.com/5E7EN/Hebrew-Syllable-Detector#readme"
+  "homepage": "https://github.com/5E7EN/Hebrew-Syllable-Detector#readme",
+  "dependencies": {
+    "opn": "^6.0.0"
+  }
 }

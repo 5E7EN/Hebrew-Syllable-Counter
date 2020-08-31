@@ -1,3 +1,14 @@
+function hex2char(hex) {
+    // converts a single hex number to a character
+    // note that no checking is performed to ensure that this is just a hex number, eg. no spaces etc
+    // hex: string, the hex codepoint to be converted
+    var result = '';
+    var n = parseInt(hex, 16);
+    if (n <= 0x10ffff) result += String.fromCodePoint(n);
+    else result += 'hex2Char error: Code point out of range: ' + dec2hex(n);
+    return result;
+}
+
 function dec2hex(textString) {
     return (textString + 0).toString(16).toUpperCase();
 }
