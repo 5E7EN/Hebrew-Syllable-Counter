@@ -3,8 +3,6 @@ const colors = require('colors');
 const constants = require('./constants');
 const cvFc = require('./conversionFuncs');
 
-const resultCheckRegex = /[\u05B0-\u05EA]/g;
-
 const rangesToRemove = [
     /[\u05D0-\u05F4]/g, // Hebrew Letters
 
@@ -12,13 +10,32 @@ const rangesToRemove = [
     /[\u05BC-\u05C7]/g // ?
 ];
 
+const resultCheckRegex = /[\u05B0-\u05EA]/g;
+
 (() => {
     let original = constants.TO_CHECK;
     let modified = original;
+    let resultLengthModifier = 0;
 
     // Remove characters that match removal ranges
     for (const range of rangesToRemove) {
         modified = modified.replace(range, '');
+    }
+
+    // Check if each word ends with one or two Sheva's and subtract from end result appropriately
+    const splitString = modified.split(' ');
+
+    // Loop through each word in provided string
+    for (const word of splitString) {
+        // idk what this does yet
+        // if (/\u05B0/.test(word.charAt(word.length - 1)) && /\u05B0/.test(word.charAt(word.length - 2))) {
+        //     resultLengthModifier = resultLengthModifier + 2;
+        // }
+
+        // Don't count Sheva if at last index
+        if (/\u05B0/.test(word.charAt(word.length - 1))) {
+            resultLengthModifier++;
+        }
     }
 
     // Convert strings to unicode for comparsion
@@ -29,7 +46,7 @@ const rangesToRemove = [
     const resultText = resultCheckRegex.test(modified)
         ? [
               '\n---------',
-              colors.bold.green(`Total syllables after processing: ${modified.match(resultCheckRegex).length}\n`),
+              colors.bold.green(`Total syllables after processing: ${modified.match(resultCheckRegex).length - resultLengthModifier}\n`),
               colors.yellow(`Original unicode string equiv: ${originalUnicode}`),
               colors.yellow(`Modified unicode string equiv: ${resultUnicode}`),
               colors.underline(`URL query: https://www.google.com/search?q=${encodeURIComponent(modified)}`),

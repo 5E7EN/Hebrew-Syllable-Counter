@@ -4,6 +4,8 @@ Determines how many syllables are in a Hebrew paragraph
 
 # Reference
 
+<https://www.unicode.org/charts/PDF/U0590.pdf>
+
 ## To Replace
 
 -   `05B3` -> `05B8`
