@@ -47,8 +47,8 @@ const resultCheckRegex = /[\u05B0-\u05EA]/g;
         ? [
               '\n---------',
               colors.bold.green(`Total syllables after processing: ${modified.match(resultCheckRegex).length - resultLengthModifier}\n`),
-              colors.yellow(`Original unicode string equiv: ${originalUnicode}`),
-              colors.yellow(`Modified unicode string equiv: ${resultUnicode}`),
+              colors.yellow(`Original unicode string equiv: ${originalUnicode} (${original})`),
+              colors.yellow(`Modified unicode string equiv: ${resultUnicode} (${modified})`),
               colors.underline(`URL query: https://www.google.com/search?q=${encodeURIComponent(modified)}`),
               '---------\n'
           ].join('\n')

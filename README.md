@@ -26,6 +26,27 @@ Determines how many syllables are in a Hebrew paragraph
 -   `05C1`
 -   `05C2`
 
+## Rules
+
+If _Gedolah_ preceeds Shevah, Shevah is considered syllable.  
+If _Ketanah_ preceeds Shevah, Shevah is **NOT** considered syllable.
+
+#### Gedolah
+
+-   Cholam (`05B9` or `05BA`)
+-   Tzere (`05B5`)
+-   Kamatz (`05B8`)
+-   Shoorook (`05BC`)
+-   Chiriq _am yad_ (`05B4`)
+
+#### Ketanah
+
+-   Kamatz Katan ()
+-   Segol (`05B6`)
+-   Pasach (`05B7`)
+-   Kubutz (`05BB`)
+-   Chiriq (`05B4`)
+
 ## Misc.
 
 `05BA` = Cholam for Vav  
