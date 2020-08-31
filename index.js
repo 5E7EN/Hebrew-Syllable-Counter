@@ -10,6 +10,8 @@ const rangesToRemove = [
     /[\u05BC-\u05C7]/g // ?
 ];
 
+const weakVowelRegex = /(\u05B6|\u05B7|\u05BB|\u05B4)/;
+
 const resultCheckRegex = /[\u05B0-\u05EA]/g;
 
 (() => {
@@ -25,12 +27,21 @@ const resultCheckRegex = /[\u05B0-\u05EA]/g;
     // Check if each word ends with one or two Sheva's and subtract from end result appropriately
     const splitString = modified.split(' ');
 
-    // Loop through each word in provided string
+    // Loop through each word in string
     for (const word of splitString) {
-        // idk what this does yet
-        // if (/\u05B0/.test(word.charAt(word.length - 1)) && /\u05B0/.test(word.charAt(word.length - 2))) {
-        //     resultLengthModifier = resultLengthModifier + 2;
-        // }
+        // Find all sheva indices for future processing
+        const shevaIndices = [];
+
+        for (let i = 0; i < word.length; i++) {
+            if (/\u05B0/.test(word[i])) shevaIndices.push(i);
+        }
+
+        // Don't count Sheva if it has preceeding weak vowel
+        for (const index of shevaIndices) {
+            if (weakVowelRegex.test(word.charAt(index - 1))) {
+                resultLengthModifier++;
+            }
+        }
 
         // Don't count Sheva if at last index
         if (/\u05B0/.test(word.charAt(word.length - 1))) {
@@ -55,27 +66,3 @@ const resultCheckRegex = /[\u05B0-\u05EA]/g;
         : 'Input does not contain Hebrew vowels.';
     console.log(resultText);
 })();
-
-// const checkNiqqud = (string) => {
-//     /* Get amount of all Niqqudos from input */
-//     let niqqudos = (string.match(generalRegex) || '').length;
-//     let hebrewChars = (string.match(hebrewCharsRegex) || '').length;
-//     console.log(`Total detected Hebrew letters: ${hebrewChars}`);
-//     console.log(`Total detected Niqqudos: ${niqqudos}`);
-
-//     /* Conditions */
-
-//     // Ignore Shin and Sin - Subtract each intance from original length
-//     if (/\u05C1/g.test(string)) niqqudos = niqqudos - string.match(/\u05C1+/g).length; // Shin
-//     if (/\u05C2/g.test(string)) niqqudos = niqqudos - string.match(/\u05C2+/g).length; // Sin
-
-//     // Check if message ends with one or two Sheva's and subtract appropriately
-// if ((/\u05B0/g.test(string.charAt(string.length - 1)) && /\u05B0/g.test(string.charAt(string.length - 3))) || /\u05B0/g.test(string.charAt(string.length - 1))) {
-//     if (/\u05B0/g.test(string.charAt(string.length - 1)) && /\u05B0/g.test(string.charAt(string.length - 3))) niqqudos = niqqudos - 2;
-//     else if (/\u05B0/g.test(string.charAt(string.length - 1))) niqqudos = niqqudos - 1;
-// }
-
-//     /* Result */
-//     const result = generalRegex.test(string) ? `Syllables after processing: ${niqqudos}` : `Input does not contain Hebrew vowels.`;
-//     return result;
-// };
