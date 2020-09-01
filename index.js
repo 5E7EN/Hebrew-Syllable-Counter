@@ -25,18 +25,29 @@ for (const word of splitString) {
     for (const index of shevaIndices) {
         // Don't count Sheva if it has preceeding weak vowel
         if (weakVowelRegex.test(word.charAt(index - 1))) {
+            console.log('Found Sheva with preceding weak vowel... Reducing result by 1.');
             resultLengthModifier++;
         }
+
         // Count Sheva if it has preceeding strong vowel
         if (strongVowelRegex.test(word.charAt(index - 1))) {
+            console.log('Found Sheva with preceding strong vowel... Increasing result by 1.');
             resultLengthModifier--;
         }
+    }
+
+    // Don't count Sheva if word starts with Dagesh preceeding Sheva
+    if (/(\u05BC)/.test(word.charAt(0)) && /(\u05B0)/.test(word.charAt(1))) {
+        resultLengthModifier++;
     }
 
     // Don't count Sheva if at last index
     if (/\u05B0/.test(word.charAt(word.length - 1))) {
         resultLengthModifier++;
     }
+
+    // Ignore other redundant Dageshes
+    modified = modified.replace(/(\u05BC)/g, '');
 }
 
 // Convert strings to unicode for comparsion
