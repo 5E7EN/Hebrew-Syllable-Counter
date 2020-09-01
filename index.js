@@ -1,6 +1,6 @@
 const colors = require('colors');
 
-const { hebrewString, rangesToRemove, weakVowelRegex, resultCheckRegex } = require('./constants');
+const { hebrewString, rangesToRemove, strongVowelRegex, weakVowelRegex, resultCheckRegex } = require('./constants');
 const cvFc = require('./conversionFuncs');
 
 let modified = hebrewString;
@@ -22,10 +22,14 @@ for (const word of splitString) {
         if (/\u05B0/.test(word[i])) shevaIndices.push(i);
     }
 
-    // Don't count Sheva if it has preceeding weak vowel
     for (const index of shevaIndices) {
+        // Don't count Sheva if it has preceeding weak vowel
         if (weakVowelRegex.test(word.charAt(index - 1))) {
             resultLengthModifier++;
+        }
+        // Count Sheva if it has preceeding strong vowel
+        if (strongVowelRegex.test(word.charAt(index - 1))) {
+            resultLengthModifier--;
         }
     }
 
