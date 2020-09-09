@@ -1,68 +1,72 @@
-const colors = require('colors');
-
-const { hebrewString, rangesToRemove, strongVowelRegex, weakVowelRegex, resultCheckRegex } = require('./constants');
+const { HEBREW_STRING, LETTER_REGEX } = require('./constants');
 const cvFc = require('./conversionFuncs');
 
-let modified = hebrewString;
-let resultLengthModifier = 0;
+/********************** Functions **********************/
 
-// Remove characters that should be ignored
-for (const range of rangesToRemove) {
-    modified = modified.replace(range, '');
+function convertUnicode(string) {
+    return cvFc.convertCharStr2CPOLD(cvFc.convertNumbers2Char(string, 'hex'), 'none', 4, 'hex');
 }
 
-// Split string for processing
-const splitString = modified.split(' ');
-
-// Loop through each word in string
-for (const word of splitString) {
-    // Find all Sheva indices for future processing
-    const shevaIndices = [];
-    for (let i = 0; i < word.length; i++) {
-        if (/\u05B0/.test(word[i])) shevaIndices.push(i);
-    }
-
-    for (const index of shevaIndices) {
-        // Don't count Sheva if it has preceeding weak vowel
-        if (weakVowelRegex.test(word.charAt(index - 1))) {
-            console.log('Found Sheva with preceding weak vowel... Reducing result by 1.');
-            resultLengthModifier++;
-        }
-
-        // Count Sheva if it has preceeding strong vowel
-        if (strongVowelRegex.test(word.charAt(index - 1))) {
-            console.log('Found Sheva with preceding strong vowel... Increasing result by 1.');
-            resultLengthModifier--;
-        }
-    }
-
-    // Don't count Sheva if word starts with Dagesh preceeding Sheva
-    if (/(\u05BC)/.test(word.charAt(0)) && /(\u05B0)/.test(word.charAt(1))) {
-        resultLengthModifier++;
-    }
-
-    // Don't count Sheva if at last index
-    if (/\u05B0/.test(word.charAt(word.length - 1))) {
-        resultLengthModifier++;
-    }
-
-    // Ignore other redundant Dageshes
-    modified = modified.replace(/(\u05BC)/g, '');
+function isLetter(s) {
+    const r = LETTER_REGEX.test(s);
+    LETTER_REGEX.lastIndex = 0;
+    return r;
 }
 
-// Convert strings to unicode for comparsion
-const originalUnicode = cvFc.convertCharStr2CPOLD(cvFc.convertNumbers2Char(hebrewString, 'hex'), 'none', 4, 'hex');
-const resultUnicode = cvFc.convertCharStr2CPOLD(cvFc.convertNumbers2Char(modified, 'hex'), 'none', 4, 'hex');
+function mapVowels(text = '') {
+    const result = [];
 
-// Prepare result
-const resultText = resultCheckRegex.test(modified)
-    ? [
-          '\n---------',
-          colors.bold.green(`Total syllables after processing: ${modified.match(resultCheckRegex).length - resultLengthModifier}\n`),
-          colors.yellow(`Original unicode string equiv: ${originalUnicode} (${hebrewString})`),
-          colors.yellow(`Modified unicode string equiv: ${resultUnicode} (${modified})`),
-          colors.underline(`URL query: https://www.google.com/search?q=${encodeURIComponent(modified)}`),
-          '---------\n'
-      ].join('\n')
-    : 'Input does not contain Hebrew vowels.';
-console.log(resultText);
+    const splitText = text.split(' ');
+
+    for (const [i, word] of splitText.entries()) {
+        let letter = '';
+        let valBuilder = '';
+        let objBuilder = {};
+
+        for (const char of word) {
+            if (isLetter(char)) {
+                if (letter) {
+                    objBuilder.letter = letter;
+                    result.push(objBuilder);
+                }
+
+                if (valBuilder.length > 0) {
+                    objBuilder.vowels = valBuilder;
+                } else {
+                    if (letter) objBuilder.vowels = null;
+                }
+
+                // Set new letter and reset builders
+                letter = char;
+                objBuilder.wordIndex = i;
+
+                valBuilder = '';
+                objBuilder = {};
+            } else {
+                valBuilder += char;
+
+                // Check if current index is last char and update result
+                if (word.substring(word.length - 1) === char && letter) {
+                    objBuilder.letter = letter;
+                    objBuilder.vowels = valBuilder;
+                    objBuilder.wordIndex = i;
+
+                    result.push(objBuilder);
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
+/*********************** Parsing ***********************/
+
+const unicode = convertUnicode(HEBREW_STRING);
+const vowels = mapVowels(HEBREW_STRING);
+
+/********************* Processing **********************/
+
+// TODO: Do stuff
+console.log(`Unicode equiv (original): ${unicode}`);
+console.log(vowels);
