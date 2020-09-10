@@ -1,4 +1,4 @@
-const { HEBREW_STRING, LETTER_REGEX } = require('./constants');
+const { HEBREW_STRING, LETTER_REGEX, REMOVAL_REGEX_RANGES, SHEVA_REGEX } = require('./constants');
 const cvFc = require('./conversionFuncs');
 
 /********************** Functions **********************/
@@ -7,52 +7,47 @@ function convertUnicode(string) {
     return cvFc.convertCharStr2CPOLD(cvFc.convertNumbers2Char(string, 'hex'), 'none', 4, 'hex');
 }
 
-function isLetter(s) {
-    const r = LETTER_REGEX.test(s);
+function isLetter(string = '') {
+    const result = LETTER_REGEX.test(string);
     LETTER_REGEX.lastIndex = 0;
-    return r;
+    return result;
 }
 
-function mapVowels(text = '') {
+function mapVowels(word = '') {
     const result = [];
 
-    const splitText = text.split(' ');
+    let letter = '';
+    let valBuilder = '';
+    let objBuilder = {};
 
-    for (const [i, word] of splitText.entries()) {
-        let letter = '';
-        let valBuilder = '';
-        let objBuilder = {};
+    for (const char of word) {
+        if (isLetter(char)) {
+            if (letter && !objBuilder.letter) {
+                objBuilder.letter = letter;
+                if (word.charAt(word.length - 1) === char) objBuilder.letter = char;
 
-        for (const char of word) {
-            if (isLetter(char)) {
-                if (letter) {
-                    objBuilder.letter = letter;
-                    result.push(objBuilder);
-                }
+                result.push(objBuilder);
+            }
 
-                if (valBuilder.length > 0) {
-                    objBuilder.vowels = valBuilder;
-                } else {
-                    if (letter) objBuilder.vowels = null;
-                }
-
-                // Set new letter and reset builders
-                letter = char;
-                objBuilder.wordIndex = i;
-
-                valBuilder = '';
-                objBuilder = {};
+            if (valBuilder.length > 0) {
+                objBuilder.vowels = valBuilder;
             } else {
-                valBuilder += char;
+                if (letter) objBuilder.vowels = null;
+            }
 
-                // Check if current index is last char and update result
-                if (word.substring(word.length - 1) === char && letter) {
-                    objBuilder.letter = letter;
-                    objBuilder.vowels = valBuilder;
-                    objBuilder.wordIndex = i;
+            // Set new letter and reset builders
+            letter = char;
+            valBuilder = '';
+            objBuilder = {};
+        } else {
+            valBuilder += char;
 
-                    result.push(objBuilder);
-                }
+            // Check if current index is last char and update result
+            if (word.charAt(word.length - 1) === char && letter) {
+                objBuilder.letter = letter;
+                objBuilder.vowels = valBuilder;
+
+                result.push(objBuilder);
             }
         }
     }
@@ -60,13 +55,56 @@ function mapVowels(text = '') {
     return result;
 }
 
+function splitAndMapVowels(text = '') {
+    const result = [];
+    const splitText = text.split(' ');
+
+    for (const word of splitText) {
+        result.push(mapVowels(word));
+    }
+
+    return result;
+}
+
+function findShevas(mappedWord = []) {
+    const shevaIndices = [];
+
+    for (let i = 0; i < mappedWord.length; i++) {
+        if (SHEVA_REGEX.test(mappedWord[i].vowels)) shevaIndices.push(i);
+    }
+
+    return shevaIndices;
+}
+
 /*********************** Parsing ***********************/
 
-const unicode = convertUnicode(HEBREW_STRING);
-const vowels = mapVowels(HEBREW_STRING);
+let workingString = HEBREW_STRING;
+const origUnicode = convertUnicode(HEBREW_STRING);
+
+// Remove characters that should be ignored
+for (const range of REMOVAL_REGEX_RANGES) {
+    workingString = workingString.replace(range, '');
+}
+
+const workingUnicode = convertUnicode(workingString);
+const words = splitAndMapVowels(workingString);
 
 /********************* Processing **********************/
 
-// TODO: Do stuff
-console.log(`Unicode equiv (original): ${unicode}`);
-console.log(vowels);
+console.log('------------------------------------');
+console.log(`Original unicode equiv (original): ${origUnicode}`);
+
+console.log(words);
+
+// Process words
+for (const [index, word] of words.entries()) {
+    console.log(`Analyzing word #${index}...`);
+
+    const shevaIndices = findShevas(word);
+    for (const shevaIndex of shevaIndices) {
+        console.log(`Found sheva at index #${shevaIndex} (on letter ${word[shevaIndex].letter})`);
+    }
+}
+
+console.log(`Modified unicode equiv (original): ${workingUnicode}`);
+console.log('------------------------------------');
