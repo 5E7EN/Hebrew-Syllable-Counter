@@ -1,6 +1,7 @@
-# Hebrew Syllable Counter
+# Hebrew Syllable Counter [WIP]
 
-Determines how many syllables are in a Hebrew paragraph
+Determines how many syllables are in a Hebrew paragraph.  
+This project is a work-in-progress and should not be used in production at the moment.
 
 # Unicode Reference
 
