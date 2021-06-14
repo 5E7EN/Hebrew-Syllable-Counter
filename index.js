@@ -1,4 +1,4 @@
-const { HEBREW_STRING, LETTER_REGEX, REMOVAL_REGEX_RANGES, SHEVA_REGEX, letters, vowels } = require('./constants');
+const { HEBREW_STRING, REMOVAL_RANGES, lettersByName, vowelsByName, begadkefatLetters } = require('./constants');
 const cvFc = require('./conversionFuncs');
 
 /********************** Functions **********************/
@@ -8,7 +8,7 @@ function convertUnicode(string) {
 }
 
 function isLetter(string = '') {
-    return letters.includes(string);
+    return Object.values(lettersByName).includes(string);
 }
 
 function mapVowels(word = '') {
@@ -49,12 +49,12 @@ function mapVowels(word = '') {
         } else {
             // Check if vowel is last char
             if (word.charAt(word.length - 1) === char) {
-                vowelBuilder += ` ${char} (${convertUnicode(char)})`;
+                vowelBuilder += char; // ` ${char} (${convertUnicode(char)})`
                 letterBuilder.vowels = vowelBuilder;
                 results.push(letterBuilder);
                 vowelBuilder = '';
             } else {
-                vowelBuilder += ` ${char} (${convertUnicode(char)})`;
+                vowelBuilder += char; // ` ${char} (${convertUnicode(char)})`
             }
         }
     }
@@ -73,14 +73,16 @@ function splitAndMapVowels(text = '') {
     return result;
 }
 
-function findShevas(mappedWord = []) {
-    const shevaIndices = [];
-
-    for (let i = 0; i < mappedWord.length; i++) {
-        if (SHEVA_REGEX.test(mappedWord[i].vowels)) shevaIndices.push(i);
+function isShevaCounted(word = [], letterPairIndex = 0) {
+    if (letterPairIndex === 0) return true;
+    if (word[letterPairIndex].vowels.includes(vowelsByName.shuruqDagesh)) return true;
+    if (word[letterPairIndex].letter === word[letterPairIndex + 1].letter && word[letterPairIndex + 1].vowels === null) return true;
+    // May need to implement skipping next word for this; since only second is counted
+    if (letterPairIndex !== word.length - 1 && word[letterPairIndex + 1].vowels?.includes(vowelsByName.sheva) && letterPairIndex + 1 !== word.length - 1) {
+        return true;
     }
 
-    return shevaIndices;
+    return false;
 }
 
 /*********************** Parsing ***********************/
@@ -89,7 +91,7 @@ let workingString = HEBREW_STRING;
 const origUnicode = convertUnicode(HEBREW_STRING);
 
 // Remove characters that should be ignored
-for (const range of REMOVAL_REGEX_RANGES) {
+for (const range of REMOVAL_RANGES) {
     workingString = workingString.replace(range, '');
 }
 
@@ -97,6 +99,8 @@ const workingUnicode = convertUnicode(workingString);
 const words = splitAndMapVowels(workingString);
 
 /********************* Processing **********************/
+
+let totalSyllableCount = 0;
 
 console.log('------------------------------------');
 console.log(`Original unicode equiv: ${origUnicode}`);
@@ -107,11 +111,32 @@ console.log(words);
 for (const [index, word] of words.entries()) {
     console.log(`Analyzing word #${index}...`);
 
-    const shevaIndices = findShevas(word);
-    for (const shevaIndex of shevaIndices) {
-        console.log(`Found sheva at index #${shevaIndex} (on letter ${word[shevaIndex].letter})`);
+    for (const [letterPairIndex, letterPair] of word.entries()) {
+        if (letterPair.vowels !== null) {
+            if (letterPair.vowels.includes(vowelsByName.sheva)) {
+                // Check sheva conditions
+                if (isShevaCounted(word, letterPairIndex)) {
+                    totalSyllableCount++;
+                }
+            } else {
+                // Check if vowel is Dagesh only
+                if (/^\u05BC$/.test(letterPair.vowels)) {
+                    // Check if BeGaDKeFaT letter
+                    if (begadkefatLetters.includes(letterPair.letter)) {
+                        // Ensure it is preceded by nothing or a Sheva
+                        if (letterPairIndex === 0 || word[letterPairIndex - 1].vowels === null || word[letterPairIndex - 1].vowels.includes(vowelsByName.sheva)) {
+                            totalSyllableCount++;
+                        }
+                    }
+                } else {
+                    totalSyllableCount++;
+                }
+            }
+        }
     }
 }
 
 console.log(`Modified unicode equiv: ${workingUnicode}`);
 console.log('------------------------------------');
+
+console.log(`TOTAL SYLLABLES: ${totalSyllableCount}`);

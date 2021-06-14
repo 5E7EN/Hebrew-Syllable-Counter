@@ -1,11 +1,9 @@
 const HEBREW_STRING = 'בְּבַקָשָה';
 
-const LETTER_REGEX = /[\u05D0-\u05EA]/;
-const REMOVAL_REGEX_RANGES = [
+const REMOVAL_RANGES = [
     /[\u0591-\u05AF]/g, // Trup characters
     /[\u05BD-\u05C7]/g // Other irrelevant/trup characters
 ];
-const SHEVA_REGEX = /\u05B0/;
 
 const lettersByName = {
     alef: '\u05D0', // א HEBREW LETTER ALEF
@@ -48,7 +46,7 @@ const vowelsByName = {
     qamats: '\u05B8', //  ָ HEBREW POINT QAMATS
     tsere: '\u05B5', //  ֵ HEBREW POINT TSERE
     hiriq: '\u05B4', //  ִ HEBREW POINT HIRIQ
-    shuruq: '\u05BC',
+    shuruqDagesh: '\u05BC',
 
     segol: '\u05B6', //  ֶ HEBREW POINT SEGOL
     holamHaser: '\u05BA', //  ֺ HEBREW POINT HASER
@@ -61,7 +59,15 @@ const vowelsByName = {
     hatafQamats: '\u05B3' //  ֳ HEBREW POINT HATAF QAMATS
 };
 
-const letters = Object.values(lettersByName);
-const vowels = Object.values(vowelsByName);
+const begadkefatLetters = [
+    lettersByName.bet,
+    lettersByName.gimel,
+    lettersByName.dalet,
+    lettersByName.kaf,
+    lettersByName.finalKaf,
+    lettersByName.pe,
+    lettersByName.finalPe,
+    lettersByName.tav
+];
 
-module.exports = { HEBREW_STRING, LETTER_REGEX, REMOVAL_REGEX_RANGES, SHEVA_REGEX, letters, vowels };
+module.exports = { HEBREW_STRING, REMOVAL_RANGES, lettersByName, vowelsByName, begadkefatLetters };
