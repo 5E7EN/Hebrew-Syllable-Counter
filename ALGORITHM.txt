@@ -1,0 +1,18 @@
+> forward loop through word
+
+if letter:
+
+-   can be first occurance -> in which case, create new builder for upcoming vowels
+-   can be non-first occurance -> in which case, check if builder exists, and push existing builder into result array, then create new builder for upcoming vowels
+
+if not letter & not last char of word:
+
+-   check if builder exists, and append char to vowels key
+
+if not letter & last char of word:
+
+-   check if builder exists, and append char to vowels key, then push existing builder into result array
+
+if letter & last char of word:
+
+-   create new builder with vowels set as `null`, then push into result array

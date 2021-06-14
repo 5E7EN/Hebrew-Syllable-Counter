@@ -1,4 +1,4 @@
-const { HEBREW_STRING, LETTER_REGEX, REMOVAL_REGEX_RANGES, SHEVA_REGEX } = require('./constants');
+const { HEBREW_STRING, LETTER_REGEX, REMOVAL_REGEX_RANGES, SHEVA_REGEX, letters, vowels } = require('./constants');
 const cvFc = require('./conversionFuncs');
 
 /********************** Functions **********************/
@@ -8,51 +8,58 @@ function convertUnicode(string) {
 }
 
 function isLetter(string = '') {
-    const result = LETTER_REGEX.test(string);
-    LETTER_REGEX.lastIndex = 0;
-    return result;
+    return letters.includes(string);
 }
 
 function mapVowels(word = '') {
-    const result = [];
+    const results = [];
 
-    let letter = '';
-    let valBuilder = '';
-    let objBuilder = {};
+    let vowelBuilder = '';
+    let letterBuilder = {};
 
     for (const char of word) {
+        console.log(`Found ${char} (${convertUnicode(char)})`);
         if (isLetter(char)) {
-            if (letter && !objBuilder.letter) {
-                objBuilder.letter = letter;
-                if (word.charAt(word.length - 1) === char) objBuilder.letter = char;
-
-                result.push(objBuilder);
-            }
-
-            if (valBuilder.length > 0) {
-                objBuilder.vowels = valBuilder;
+            // Check if first occurance of letter
+            if (!letterBuilder.letter) {
+                console.log(`Building first letter: ${char}`);
+                letterBuilder.letter = char;
             } else {
-                if (letter) objBuilder.vowels = null;
+                console.log(`Found another letter: ${char} -> Saving old letter with vowels and building new...`);
+
+                // Update vowels; then push previous builder into result
+                if (vowelBuilder.length > 0) {
+                    letterBuilder.vowels = vowelBuilder;
+                } else {
+                    letterBuilder.vowels = null;
+                }
+
+                results.push(letterBuilder);
+                vowelBuilder = '';
+
+                // Check if letter is last char
+                if (word.charAt(word.length - 1) === char) {
+                    letterBuilder = { letter: char, vowels: null };
+                    results.push(letterBuilder);
+                    vowelBuilder = '';
+                } else {
+                    letterBuilder = { letter: char };
+                }
             }
-
-            // Set new letter and reset builders
-            letter = char;
-            valBuilder = '';
-            objBuilder = {};
         } else {
-            valBuilder += char;
-
-            // Check if current index is last char and update result
-            if (word.charAt(word.length - 1) === char && letter) {
-                objBuilder.letter = letter;
-                objBuilder.vowels = valBuilder;
-
-                result.push(objBuilder);
+            // Check if vowel is last char
+            if (word.charAt(word.length - 1) === char) {
+                vowelBuilder += ` ${char} (${convertUnicode(char)})`;
+                letterBuilder.vowels = vowelBuilder;
+                results.push(letterBuilder);
+                vowelBuilder = '';
+            } else {
+                vowelBuilder += ` ${char} (${convertUnicode(char)})`;
             }
         }
     }
 
-    return result;
+    return results;
 }
 
 function splitAndMapVowels(text = '') {
@@ -92,7 +99,7 @@ const words = splitAndMapVowels(workingString);
 /********************* Processing **********************/
 
 console.log('------------------------------------');
-console.log(`Original unicode equiv (original): ${origUnicode}`);
+console.log(`Original unicode equiv: ${origUnicode}`);
 
 console.log(words);
 
@@ -106,5 +113,5 @@ for (const [index, word] of words.entries()) {
     }
 }
 
-console.log(`Modified unicode equiv (original): ${workingUnicode}`);
+console.log(`Modified unicode equiv: ${workingUnicode}`);
 console.log('------------------------------------');
