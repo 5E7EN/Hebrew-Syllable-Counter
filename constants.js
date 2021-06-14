@@ -1,4 +1,4 @@
-const HEBREW_STRING = 'בְּבַקָשָה';
+const HEBREW_STRING = 'בְּבַקָשָהה';
 
 const REMOVAL_RANGES = [
     /[\u0591-\u05AF]/g, // Trup characters

@@ -13,7 +13,7 @@ function dec2hex(textString) {
     return (textString + 0).toString(16).toUpperCase();
 }
 
-function convertCharStr2CPOLD(textString, parameters, pad, type) {
+function convertCharString(textString, parameters, pad, type) {
     // converts a string of characters to code points, separated by space
     // textString: string, the string to convert
     // parameters: string enum [ascii, latin1], a set of characters to not convert
@@ -126,4 +126,4 @@ function convertNumbers2Char(str, type) {
     return str;
 }
 
-module.exports = { convertCharStr2CPOLD, convertNumbers2Char };
+module.exports = { convertCharString, convertNumbers2Char };

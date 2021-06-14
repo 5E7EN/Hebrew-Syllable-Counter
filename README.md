@@ -9,3 +9,4 @@ Determines how many syllables are in a Hebrew paragraph
 # Issues
 
 -   נִיקוּד
+-   בְּבַקָשָהה

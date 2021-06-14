@@ -1,10 +1,10 @@
 const { HEBREW_STRING, REMOVAL_RANGES, lettersByName, vowelsByName, begadkefatLetters } = require('./constants');
-const cvFc = require('./conversionFuncs');
+const { convertCharString, convertNumbers2Char } = require('./unicodeFunctions');
 
 /********************** Functions **********************/
 
 function convertUnicode(string) {
-    return cvFc.convertCharStr2CPOLD(cvFc.convertNumbers2Char(string, 'hex'), 'none', 4, 'hex');
+    return convertCharString(convertNumbers2Char(string, 'hex'), 'none', 4, 'hex');
 }
 
 function isLetter(string = '') {
