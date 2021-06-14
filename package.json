@@ -1,7 +1,7 @@
 {
-    "name": "hebrew-syllable-algorithm",
+    "name": "hebrew-syllable-counter",
     "version": "1.0.0",
-    "description": "Determines how many syllables are in a Hebrew paragraph",
+    "description": "Determines how many syllables are in a Hebrew text string.",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,7 +16,5 @@
         "url": "https://github.com/5E7EN/Hebrew-Syllable-Algorithm/issues"
     },
     "homepage": "https://github.com/5E7EN/Hebrew-Syllable-Algorithm#readme",
-    "dependencies": {
-        "colors": "^1.4.0"
-    }
+    "dependencies": {}
 }
