@@ -1,4 +1,4 @@
-# Hebrew Syllable Algorithm
+# Hebrew Syllable Counter
 
 Determines how many syllables are in a Hebrew paragraph
 
