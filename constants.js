@@ -59,15 +59,4 @@ const vowelsByName = {
     hatafQamats: '\u05B3' //  ֳ HEBREW POINT HATAF QAMATS
 };
 
-const begadkefatLetters = [
-    lettersByName.bet,
-    lettersByName.gimel,
-    lettersByName.dalet,
-    lettersByName.kaf,
-    lettersByName.finalKaf,
-    lettersByName.pe,
-    lettersByName.finalPe,
-    lettersByName.tav
-];
-
-module.exports = { HEBREW_STRING, REMOVAL_RANGES, lettersByName, vowelsByName, begadkefatLetters };
+module.exports = { HEBREW_STRING, REMOVAL_RANGES, lettersByName, vowelsByName };

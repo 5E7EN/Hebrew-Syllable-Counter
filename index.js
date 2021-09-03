@@ -1,7 +1,7 @@
-const { HEBREW_STRING, REMOVAL_RANGES, lettersByName, vowelsByName, begadkefatLetters } = require('./constants');
+const { HEBREW_STRING, REMOVAL_RANGES, lettersByName, vowelsByName } = require('./constants');
 const { convertCharString, convertNumbers2Char } = require('./unicodeFunctions');
 
-/********************** Functions **********************/
+//#region Functions
 
 function convertUnicode(string) {
     return convertCharString(convertNumbers2Char(string, 'hex'), 'none', 4, 'hex');
@@ -74,18 +74,37 @@ function splitAndMapVowels(text = '') {
 }
 
 function isShevaCounted(word = [], letterPairIndex = 0) {
-    if (letterPairIndex === 0) return true;
-    if (word[letterPairIndex].vowels.includes(vowelsByName.shuruqDagesh)) return true;
-    if (word[letterPairIndex].letter === word[letterPairIndex + 1].letter && word[letterPairIndex + 1].vowels === null) return true;
+    // !- Sheva is on first letter of word
+    if (letterPairIndex === 0) {
+        return true;
+    }
+
+    // !- Sheva also hash degash
+    if (word[letterPairIndex].vowels.includes(vowelsByName.shuruqDagesh)) {
+        return true;
+    }
+
+    // !- Next letter is same as current, and has no vowels
+    if (word[letterPairIndex].letter === word[letterPairIndex + 1].letter && word[letterPairIndex + 1].vowels === null) {
+        return true;
+    }
+
     // May need to implement skipping next word for this; since only second is counted
-    if (letterPairIndex !== word.length - 1 && word[letterPairIndex + 1].vowels?.includes(vowelsByName.sheva) && letterPairIndex + 1 !== word.length - 1) {
+    // !- Sheva is not on last letter of word, next letter also has sheva, and isn't 2nd to last letter
+    if (
+        letterPairIndex !== word.length - 1 &&
+        word[letterPairIndex + 1].vowels?.includes(vowelsByName.sheva) &&
+        letterPairIndex + 1 !== word.length - 1
+    ) {
         return true;
     }
 
     return false;
 }
 
-/*********************** Parsing ***********************/
+//#endregion
+
+//#region Parsing
 
 let workingString = HEBREW_STRING;
 const origUnicode = convertUnicode(HEBREW_STRING);
@@ -95,10 +114,12 @@ for (const range of REMOVAL_RANGES) {
     workingString = workingString.replace(range, '');
 }
 
+//#endregion
+
 const workingUnicode = convertUnicode(workingString);
 const words = splitAndMapVowels(workingString);
 
-/********************* Processing **********************/
+//#region Processing
 
 let totalSyllableCount = 0;
 
@@ -109,7 +130,7 @@ console.log(words);
 
 // Process words
 for (const [index, word] of words.entries()) {
-    console.log(`Analyzing word #${index}...`);
+    console.log(`Analyzing word #${index + 1}...`);
 
     for (const [letterPairIndex, letterPair] of word.entries()) {
         if (letterPair.vowels !== null) {
@@ -121,20 +142,20 @@ for (const [index, word] of words.entries()) {
             } else {
                 // Check if vowel is Dagesh only
                 if (/^\u05BC$/.test(letterPair.vowels)) {
-                    // Check if BeGaDKeFaT letter
-                    if (begadkefatLetters.includes(letterPair.letter)) {
-                        // Ensure it is preceded by nothing or a Sheva
-                        if (letterPairIndex === 0 || word[letterPairIndex - 1].vowels === null || word[letterPairIndex - 1].vowels.includes(vowelsByName.sheva)) {
-                            totalSyllableCount++;
-                        }
+                    // Ensure the letter is vav
+                    if (letterPair.letter === lettersByName.vav) {
+                        totalSyllableCount++;
                     }
                 } else {
+                    // Increment count for any other vowels
                     totalSyllableCount++;
                 }
             }
         }
     }
 }
+
+//#endregion
 
 console.log(`Modified unicode equiv: ${workingUnicode}`);
 console.log('------------------------------------');
